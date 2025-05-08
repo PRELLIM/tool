@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PRELLIM Code Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      background: #f8f9fa;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+    label, select, input, button {
+      display: block;
+      margin-bottom: 1em;
+      width: 100%;
+    }
+    #output {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 1em;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>PRELLIM Code Generator</h1>
+
+  <label for="isolation">Category:</label>
+  <select id="isolation">
+    <option value="I">I. Isolated</option>
+    <option value="II">II. Non-isolated</option>
+  </select>
+
+  <label for="main">Main group:</label>
+  <select id="main">
+    <option value="1">1. Absent/short</option>
+    <option value="2">2. Duplication</option>
+    <option value="3">3. Fusion</option>
+    <option value="4">4. Contracture</option>
+    <option value="5">5. Bowing</option>
+    <option value="6">6. Other</option>
+  </select>
+
+  <label for="subgroup">Subgroup location/type:</label>
+  <select id="subgroup">
+    <option value="a">a. Upper leg (Femur)</option>
+    <option value="b">b. Lower leg (Tibia/Fibula)</option>
+    <option value="c">c. Foot</option>
+    <option value="d">d. Intercalary</option>
+    <option value="e">e. Hip</option>
+    <option value="f">f. Knee</option>
+    <option value="g">g. Ankle (clubfoot)</option>
+  </select>
+
+  <label for="detail">Subtype (if applicable):</label>
+  <select id="detail">
+    <option value="">None</option>
+    <option value="i">i. Tibial (preaxial)</option>
+    <option value="ii">ii. Fibular (postaxial)</option>
+    <option value="iii">iii. Central</option>
+    <option value="iv">iv. Polysyndactyly</option>
+  </select>
+
+  <label for="laterality">Laterality:</label>
+  <select id="laterality">
+    <option value="uni.left">Unilateral left</option>
+    <option value="uni.right">Unilateral right</option>
+    <option value="bi">Bilateral</option>
+  </select>
+
+  <label for="notes">Additional information (optional):</label>
+  <input type="text" id="notes" placeholder="e.g. overlapping toes or genetic syndrome">
+
+  <button onclick="generateCode()">Generate PRELLIM Code</button>
+
+  <div id="output"></div>
+
+  <script>
+    function generateCode() {
+      const isolation = document.getElementById('isolation').value;
+      const main = document.getElementById('main').value;
+      const subgroup = document.getElementById('subgroup').value;
+      const detail = document.getElementById('detail').value;
+      const laterality = document.getElementById('laterality').value;
+      const notes = document.getElementById('notes').value;
+
+      const fullCode = `${isolation}.${main}.${subgroup}${detail ? '.' + detail : ''}.${laterality}`;
+
+      document.getElementById('output').innerHTML =
+        `<strong>PRELLIM Code:</strong> ${fullCode}<br><br>` +
+        (notes ? `<em>Note:</em> ${notes}` : "") +
+        `<br><br><small>You can copy and paste this code into your documentation or reports.</small>`;
+    }
+  </script>
+</body>
+</html>
