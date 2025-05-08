@@ -1,2 +1,0 @@
-# tool
-PRELLIM Code Generator
