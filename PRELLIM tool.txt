@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PRELLIM Webtool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      background: #f8f9fa;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+    label, select, input, button {
+      display: block;
+      margin-bottom: 1em;
+      width: 100%;
+    }
+    #output {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 1em;
+      margin-top: 1em;
+    }
+    .lang-toggle {
+      text-align: right;
+      margin-bottom: 1em;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="lang-toggle">
+    <button onclick="toggleLanguage()">Switch to English</button>
+  </div>
+
+  <h1 data-nl="PRELLIM Classificatie Webtool" data-en="PRELLIM Classification Tool">PRELLIM Classificatie Webtool</h1>
+
+  <label for="isolation" data-nl="Type afwijking:" data-en="Type of anomaly:">Type afwijking:</label>
+  <select id="isolation">
+    <option value="I">Isolated</option>
+    <option value="II">Non-isolated</option>
+  </select>
+
+  <label for="subtype" data-nl="Subtype:" data-en="Subtype:">Subtype:</label>
+  <select id="subtype">
+    <option value="1" data-nl="Absent/short (reductiedefect)" data-en="Absent/short (reduction defect)">Absent/short (reductiedefect)</option>
+    <option value="2" data-nl="Duplication (polydactylie)" data-en="Duplication (polydactyly)">Duplication (polydactylie)</option>
+    <option value="3" data-nl="Fusion (syndactylie)" data-en="Fusion (syndactyly)">Fusion (syndactylie)</option>
+    <option value="4" data-nl="Contracture (bv. clubfoot)" data-en="Contracture (e.g. clubfoot)">Contracture (bv. clubfoot)</option>
+    <option value="5" data-nl="Bowing" data-en="Bowing">Bowing</option>
+    <option value="6" data-nl="Other" data-en="Other">Other</option>
+  </select>
+
+  <label for="location" data-nl="Locatie van de afwijking:" data-en="Location of the anomaly:">Locatie van de afwijking:</label>
+  <select id="location">
+    <option value="a">Bovenbeen / Upper leg</option>
+    <option value="b">Onderbeen / Lower leg</option>
+    <option value="c">Voet / Foot</option>
+  </select>
+
+  <label for="side" data-nl="Zijdigheid:" data-en="Side:">Zijdigheid:</label>
+  <select id="side">
+    <option value="uni.left" data-nl="Unilateraal links" data-en="Unilateral left">Unilateraal links</option>
+    <option value="uni.right" data-nl="Unilateraal rechts" data-en="Unilateral right">Unilateraal rechts</option>
+    <option value="bi" data-nl="Bilateraal" data-en="Bilateral">Bilateraal</option>
+  </select>
+
+  <label for="notes" data-nl="Extra informatie (optioneel):" data-en="Additional information (optional):">Extra informatie (optioneel):</label>
+  <input type="text" id="notes" placeholder="Bijvoorbeeld: afwijking bij familiaire polydactylie">
+
+  <button onclick="generateCode()" data-nl="Genereer PRELLIM-code" data-en="Generate PRELLIM code">Genereer PRELLIM-code</button>
+  <button onclick="downloadCSV()" data-nl="Download als CSV" data-en="Download as CSV">Download als CSV</button>
+
+  <div id="output"></div>
+
+  <script>
+    let latestCode = "";
+    let currentLang = "nl";
+
+    function generateCode() {
+      const isolation = document.getElementById('isolation').value;
+      const subtype = document.getElementById('subtype').value;
+      const location = document.getElementById('location').value;
+      const side = document.getElementById('side').value;
+      const notes = document.getElementById('notes').value;
+
+      latestCode = `${isolation}.${subtype}.${location}.${side}`;
+
+      document.getElementById('output').innerHTML =
+        `<strong>PRELLIM-code:</strong> ${latestCode}<br><br>` +
+        (notes ? `<em>${currentLang === 'nl' ? 'Opmerking' : 'Note'}:</em> ${notes}` : "") +
+        `<br><br><small>${currentLang === 'nl' ? 'Gebruik deze code in je verslaglegging of publicatie.' : 'Use this code in your documentation or publication.'}</small>`;
+    }
+
+    function downloadCSV() {
+      if (!latestCode) {
+        alert(currentLang === 'nl' ? "Genereer eerst een PRELLIM-code." : "Please generate a PRELLIM code first.");
+        return;
+      }
+      const notes = document.getElementById('notes').value;
+      const csvContent = `PRELLIM-code,${currentLang === 'nl' ? 'Opmerking' : 'Note'}\n\"${latestCode}\",\"${notes}\"\n`;
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "prellim_code.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'nl' ? 'en' : 'nl';
+      document.querySelector('button[onclick="toggleLanguage()"]')
+              .textContent = currentLang === 'nl' ? 'Switch to English' : 'Wissel naar Nederlands';
+
+      document.querySelectorAll('[data-nl]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${currentLang}`);
+      });
+
+      document.getElementById('notes').placeholder =
+        currentLang === 'nl'
+        ? "Bijvoorbeeld: afwijking bij familiaire polydactylie"
+        : "For example: anomaly in familial polydactyly";
+    }
+  </script>
+</body>
+</html>
